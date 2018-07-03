@@ -14,8 +14,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-
 import java.util.Vector;
 
 import org.jdom2.Document;
@@ -27,22 +25,33 @@ import org.jdom2.output.XMLOutputter;
 
 public class Xml_main {
 	
-	private String s="iterator erase( iterator pos, int real );"; //total string from JIMIN
-	private Cppreference practice;
+	private String s="iterator erase( iterator pos, double pos );\niterator delete( int index );"; //total string from JIMIN
+	//private Scaffold practice;
+	private ArrayList <Scaffold> Scaffold_List=new ArrayList<Scaffold>();
+
 	
-	public void init(String retval){
+	public void init(){
 		
 			
-			retval = retval.replaceAll("(|)", "");
-			String[] parts=retval.split(" ");
-			this.practice = new Cppreference();
-			this.practice.set_return_type(parts[0]);
-		    this.practice.set_fn_name(parts[1]);
-		    for(int i=2; i<=(parts.length-2); i++)
+		String[] splited=s.split(";\n");
+		
+		for(int i=0; i<splited.length; i++){
+			Scaffold_List.add(new Scaffold());
+			splited[i] = splited[i].replaceAll("(|)", "");
+			String[] parts=splited[i].split(" ");
+	
+			Scaffold_List.get(i).set_return_type(parts[0]);
+			Scaffold_List.get(i).set_fn_name(parts[1]);
+			for(int j=2; j<=(parts.length-2); j++)
 		    {
-		    	if(i%2==0) this.practice.set_arguments(parts[i]);
+				
+		    	if(j%2==0) {
+		    		System.out.println(parts[j]);
+		    		Scaffold_List.get(i).set_arguments(parts[j]);
+		    	}
 		    }
-
+		}
+	
 			
 }
 	
@@ -52,42 +61,37 @@ public class Xml_main {
  public void write() {
         
         Document doc = new Document();
+        ArrayList<Scaffold_Element> Scaffold_Elements = new ArrayList<Scaffold_Element>();
+   
         Element root = new Element("scaffolds"); //风飘 郡府刚飘 积己
-  
         doc.setRootElement(root);
-       
-           
-            Element fn = new Element("func_name");
-            Element rt = new Element("ret_type");
-            Element ags = new Element("args");
-            Element SC = new Element("scaffold");
-            Element ag=new Element("arg_type");
-            ArrayList<Element> Element_list = new ArrayList<Element>();
-            int args_size = this.practice.get_args_size();
-            
-            for(int i=0; i<args_size; i++)
-            	Element_list.add(new Element("arg_type"));
-            
-            rt.setText(this.practice.get_return_type());
-            fn.setText(this.practice.get_fn_name());
-           
-           
-            root.addContent(SC);
-            root.addContent(fn);
-            root.addContent(rt);
-            root.addContent(ags);
-            
         
-            //System.out.println(this.practice.get_args_size());
-          
+        for(int i =0; i<Scaffold_List.size(); i++){
+        	Scaffold_Elements.add(new Scaffold_Element());
+        	int args_size = Scaffold_List.get(i).get_args_size();
+        	 
+        	for(int j=0; j<args_size; j++)
+             	Scaffold_Elements.get(i).Argument_list.add(new Element("arg_type"));
+        	
+
+            Scaffold_Elements.get(i).rt.setText(Scaffold_List.get(i).get_return_type());
+            Scaffold_Elements.get(i).fn.setText(Scaffold_List.get(i).get_fn_name());
+           
+           
+            root.addContent(Scaffold_Elements.get(i).SC);
+            Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).fn);
+            Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).rt);
+            Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).ags);
+            
+       
             for(int count=0; count<args_size; count++){
-            		
-            		Element_list.get(count).setText(this.practice.get_arguments(count));
-            		ags.addContent(Element_list.get(count));
-            }		
-            		
-            //ags.addContent(ag);
-                  
+        		
+        		Scaffold_Elements.get(i).Argument_list.get(count).setText(Scaffold_List.get(i).get_arguments(count));
+        		Scaffold_Elements.get(i).ags.addContent(Scaffold_Elements.get(i).Argument_list.get(count));
+        }		
+            
+        }
+       
             
         XMLOutputter xout = new XMLOutputter();
         Format fo = xout.getFormat();
@@ -155,14 +159,11 @@ public class Xml_main {
 	public static void main(String[] args) {
 		
 		Xml_main xml = new Xml_main();
-		String temp = xml.get_string();
-		for(String retval : temp.split(";\n")) {
-			xml.init(retval);
-			xml.write();
-		}	
-		//xml.read();	
+		xml.init();
+		xml.write();
 		
-}
+	
+	}
 	
 	
 	public String get_string() {

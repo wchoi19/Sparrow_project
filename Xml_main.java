@@ -29,7 +29,9 @@ public class Xml_main {
 	//private Scaffold practice;
 	private ArrayList <Scaffold> Scaffold_List=new ArrayList<Scaffold>();
 
-	
+	public void setInput(String input){
+		this.s=input;
+	}
 	public void init(){
 		
 			
@@ -91,8 +93,6 @@ public class Xml_main {
         }		
             
         }
-       
-            
         XMLOutputter xout = new XMLOutputter();
         Format fo = xout.getFormat();
       //  fo.setEncoding("UTF-8"); //한글인코딩
@@ -107,67 +107,17 @@ public class Xml_main {
             e.printStackTrace();
         }    
         
- }  	
+ }
 
-/**
- * xml 읽어오기
- */   
-// 
-//public void read() {
-//    List<Cppreference> userList = null;
-//    try {
-//        File file = new File("practice.xml");
-//        FileInputStream in = new FileInputStream(file);
-//        SAXBuilder builder = new SAXBuilder();
-////        builder.setIgnoringElementContentWhitespace(true);
-//            
-//        Document doc = builder.build(in);            
-//        
-//        Element xmlRoot = doc.ge
-//        		
-//        		tRootElement();
-//        
-//        List<Element> tempList = xmlRoot.getChildren();
-//        userList = new ArrayList<Cppreference>();
-//        
-//        for(int i = 0; i < tempList.size(); i++) {
-//            Element element = (Element) tempList.get(i);
-//            
-//            String name = element.getName();
-//            String value = element.getValue();
-//            System.out.println("("+i+") name="+name+"/value="+value);
-//                                            
-//            Cppreference u = new Cppreference();
-//            u.set_return_type(element.getChildTextTrim("name"));
-//            u.set_fn_name(element.getChildTextTrim("hp"));
-//            u.set_arguments(element.getChildTextTrim("level"));
-//           
-//            userList.add(u);
-//        }
-//        
-//        for (Cppreference user : userList ) {
-//            System.out.println(user);
-//        }
-//        
-//    } catch (Exception e) {
-//        e.printStackTrace();
-//    }
-//    
-//}
-	
-	
 	public static void main(String[] args) {
-		
+
 		Xml_main xml = new Xml_main();
+		xml.setInput(Scraper.scrap());
 		xml.init();
 		xml.write();
 		
 	
 	}
-	
-	
-	public String get_string() {
-		return this.s;
-	}
+
 
 }

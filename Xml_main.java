@@ -26,10 +26,12 @@ import org.jdom2.output.XMLOutputter;
 public class Xml_main {
 	
 	private String s="iterator erase( iterator pos, double pos );\niterator delete( int index );"; //total string from JIMIN
-	//private Scaffold practice;
+	
 	private ArrayList <Scaffold> Scaffold_List=new ArrayList<Scaffold>();
 
-	
+	  /**
+     * input string을 Scaffold 클래스로 변환하여 ArrayList<Scaffold>에 저장
+     */
 	public void init(){
 		
 			
@@ -56,14 +58,14 @@ public class Xml_main {
 }
 	
     /**
-     * list에 들어있는 유저정보를 xml문서로 만드는 메소드
+     * list에 들어있는 Scaffold 정보를 XML로 변환
      */
  public void write() {
         
         Document doc = new Document();
         ArrayList<Scaffold_Element> Scaffold_Elements = new ArrayList<Scaffold_Element>();
    
-        Element root = new Element("scaffolds"); //루트 엘리먼트 생성
+        Element root = new Element("scaffolds"); //Root Element
         doc.setRootElement(root);
         
         for(int i =0; i<Scaffold_List.size(); i++){
@@ -95,9 +97,9 @@ public class Xml_main {
             
         XMLOutputter xout = new XMLOutputter();
         Format fo = xout.getFormat();
-      //  fo.setEncoding("UTF-8"); //한글인코딩
+      
        fo.setIndent(" ");//들여쓰기
-       fo.setLineSeparator("\r\n");//줄바꿈
+       fo.setLineSeparator("\r\n");//new line
        fo.setTextMode(Format.TextMode.TRIM);
         
         try {            
@@ -109,52 +111,9 @@ public class Xml_main {
         
  }  	
 
-/**
- * xml 읽어오기
- */   
-// 
-//public void read() {
-//    List<Cppreference> userList = null;
-//    try {
-//        File file = new File("practice.xml");
-//        FileInputStream in = new FileInputStream(file);
-//        SAXBuilder builder = new SAXBuilder();
-////        builder.setIgnoringElementContentWhitespace(true);
-//            
-//        Document doc = builder.build(in);            
-//        
-//        Element xmlRoot = doc.ge
-//        		
-//        		tRootElement();
-//        
-//        List<Element> tempList = xmlRoot.getChildren();
-//        userList = new ArrayList<Cppreference>();
-//        
-//        for(int i = 0; i < tempList.size(); i++) {
-//            Element element = (Element) tempList.get(i);
-//            
-//            String name = element.getName();
-//            String value = element.getValue();
-//            System.out.println("("+i+") name="+name+"/value="+value);
-//                                            
-//            Cppreference u = new Cppreference();
-//            u.set_return_type(element.getChildTextTrim("name"));
-//            u.set_fn_name(element.getChildTextTrim("hp"));
-//            u.set_arguments(element.getChildTextTrim("level"));
-//           
-//            userList.add(u);
-//        }
-//        
-//        for (Cppreference user : userList ) {
-//            System.out.println(user);
-//        }
-//        
-//    } catch (Exception e) {
-//        e.printStackTrace();
-//    }
-//    
-//}
-	
+ /**
+  * main function
+  */
 	
 	public static void main(String[] args) {
 		

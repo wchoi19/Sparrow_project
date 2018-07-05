@@ -29,6 +29,11 @@ public class Xml_main {
 	public String getOutput_filename() {return output_filename;};
 	public void init(){ //Parsing된 HTML로 Scaffold 객체 생성 및 정보 입력
 
+		boolean isMember;
+		System.out.println("funcname is : " + input_funcname);
+		if(input_funcname.matches("std::.+::.+")){
+			isMember=true;
+		} else isMember=false;
 		String[] splitted=input_func.split("(;\ntemplate.+\\>)|(;\n)|(template.+\\>)");
 
 		//int sl_count=0;
@@ -38,7 +43,7 @@ public class Xml_main {
 
 				Scaffold_List.add(new Scaffold());
 				//sl_count++;
-
+				Scaffold_List.get(i).set_isMemberFn(isMember);
 				//splitted[i] = splitted[i].replaceAll("[\\(|\\),]", "");
 				System.out.println("\nsplitted[" + i +"] is : " + splitted[i]);
 				String[] parts = splitted[i].split("((,\\sconst\\s)|\\)|\\s|(\\(\\s)|(,\\s))");

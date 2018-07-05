@@ -9,43 +9,53 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 
 //// commit test comment
 
 public class Xml_main {
-	private String input;
+	private String input_funcname;
+	private String input_func;
 	private ArrayList <Scaffold> Scaffold_List = new ArrayList<Scaffold>();
 	private String output_filename = "practice.xml";
 
-	public void setInput(String input){
-		this.input=input;
+	public void setInput(String[] input){
+
+		this.input_funcname=input[0];
+		this.input_func=input[1];
 	};
 	public void setOutput_filename(String s){this.output_filename=s;}
 	public String getOutput_filename() {return output_filename;};
 	public void init(){ //Parsing된 HTML로 Scaffold 객체 생성 및 정보 입력
 
-		String[] splitted=input.split(";\n");
+		String[] splitted=input_func.split("(;\ntemplate.+\\>)|(;\n)|(template.+\\>)");
+
+		//int sl_count=0;
 		
 		for(int i=0; i<splitted.length; i++){
-			Scaffold_List.add(new Scaffold());
-			//splitted[i] = splitted[i].replaceAll("[\\(|\\),]", "");
-			System.out.println("splitted[i] is : " + splitted[i]);
-			String[] parts=splitted[i].split("(\\)|\\s|(\\(\\s)|(,\\s))");
+			//if(!splitted[i].startsWith("template")) { //check
 
-			//output test
-			for (int k=0 ; k<parts.length ; k++) System.out.println("part[" + k + "] is : " + parts[k] );
+				Scaffold_List.add(new Scaffold());
+				//sl_count++;
+
+				//splitted[i] = splitted[i].replaceAll("[\\(|\\),]", "");
+				System.out.println("\nsplitted[" + i +"] is : " + splitted[i]);
+				String[] parts = splitted[i].split("((,\\sconst\\s)|\\)|\\s|(\\(\\s)|(,\\s))");
+
+				//output test
+				for (int k = 0; k < parts.length; k++) System.out.println("part[" + k + "] is : " + parts[k]);
 
 
-			Scaffold_List.get(i).set_return_type(parts[0]);
-			Scaffold_List.get(i).set_fn_name(parts[1]);
-			for(int j=2; j<=(parts.length-2); j++)
-		    {
-		    	if(j%2==0) {
-		    		System.out.println(parts[j]);
-		    		Scaffold_List.get(i).set_arguments(parts[j]);
-		    	}
-		    }
+				Scaffold_List.get(i).set_return_type(parts[0]);
+				Scaffold_List.get(i).set_fn_name(parts[1]);
+				for (int j = 2; j <= (parts.length - 2); j++) {
+					if (j % 2 == 0) {
+						//System.out.println(parts[j]);
+						Scaffold_List.get(i).set_arguments(parts[j]);
+					}
+				}
+			//}
 		}
 }
     /**

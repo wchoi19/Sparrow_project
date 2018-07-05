@@ -29,10 +29,14 @@ public class Xml_main {
 		
 		for(int i=0; i<splitted.length; i++){
 			Scaffold_List.add(new Scaffold());
-			splitted[i] = splitted[i].replaceAll("[\\(|\\),]", "");
+			//splitted[i] = splitted[i].replaceAll("[\\(|\\),]", "");
 			System.out.println("splitted[i] is : " + splitted[i]);
-			String[] parts=splitted[i].split(" ");
-	
+			String[] parts=splitted[i].split("(\\)|\\s|(\\(\\s)|(,\\s))");
+
+			//output test
+			for (int k=0 ; k<parts.length ; k++) System.out.println("part[" + k + "] is : " + parts[k] );
+
+
 			Scaffold_List.get(i).set_return_type(parts[0]);
 			Scaffold_List.get(i).set_fn_name(parts[1]);
 			for(int j=2; j<=(parts.length-2); j++)

@@ -38,7 +38,7 @@ public class Scaffold {
     public String get_arguments(int index) {
         return arguments.get(index);
     }
-    public void set_arguments(String arguments) {
+    public void add_arguments(String arguments) {
         this.arguments.add(arguments);
     }
     public int get_args_size(){

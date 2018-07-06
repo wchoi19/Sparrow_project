@@ -10,6 +10,8 @@ import org.jdom2.output.XMLOutputter;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 //// commit test comment
@@ -34,18 +36,53 @@ public class Xml_main {
 		if(input_funcname.matches("std::.+::.+")){
 			isMember=true;
 		} else isMember=false;
-		String[] splitted=input_func.split("(;\ntemplate.+\\>)|(;\n)|(template.+\\>)");
+		String[] splitted=input_func.split("(;\ntemplate.+\\> )|(;\n)|(template.+\\>)"); //수정 https://en.cppreference.com/w/cpp/container/list/remove 로 테스트
 
 		//int sl_count=0;
 		
-		for(int i=0; i<splitted.length; i++){
-			//if(!splitted[i].startsWith("template")) { //check
+			for(int i=0; i<splitted.length; i++){
+				//if(!splitted[i].startsWith("template")) { //check
 
 				Scaffold_List.add(new Scaffold());
 				//sl_count++;
 				Scaffold_List.get(i).set_isMemberFn(isMember);
 				//splitted[i] = splitted[i].replaceAll("[\\(|\\),]", "");
 				System.out.println("\nsplitted[" + i +"] is : " + splitted[i]);
+
+
+				Pattern pattern1 = Pattern.compile("(\\S+\\s)?(\\S+)(\\s)(\\S+?)(\\(\\s)(.*?\\s\\))(.+)?");
+				Matcher matcher1 = pattern1.matcher(splitted[i]);
+				String parameters="";
+
+				if (matcher1.find())
+				{
+					Scaffold_List.get(i).set_return_type(matcher1.group(2));
+					Scaffold_List.get(i).set_fn_name(matcher1.group(4));
+					parameters=matcher1.group(6);
+
+					System.out.println("return_type : " + Scaffold_List.get(i).get_return_type());
+					System.out.println("function_name : " + Scaffold_List.get(i).get_fn_name());
+					System.out.println("parameters : " + parameters);
+				}
+
+				String regex1="(\\S+\\s)??(\\S+)(\\s)(\\S+)(\\s??)(=.+)??(,\\s|\\s\\))";
+				Pattern pattern3=Pattern.compile(regex1);
+				Matcher matcher3= pattern3.matcher(parameters);
+
+				int matchCount=0;
+
+				while(matcher3.find()){
+					matchCount++;
+					//System.out.println("Match count : " + matchCount + " Group Zero Text : " + matcher3.group());
+					Scaffold_List.get(i).add_arguments(matcher3.group(2));
+					System.out.println("Argument Type is : " +  matcher3.group(2));
+				}
+
+
+
+
+
+				/*
 				String[] parts = splitted[i].split("((,\\sconst\\s)|\\)|\\s|(\\(\\s)|(,\\s))");
 
 				//output test
@@ -60,6 +97,7 @@ public class Xml_main {
 						Scaffold_List.get(i).set_arguments(parts[j]);
 					}
 				}
+				*/
 			//}
 		}
 }

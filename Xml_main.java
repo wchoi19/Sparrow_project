@@ -21,12 +21,16 @@ public class Xml_main {
 	private String input_func;
 	private ArrayList <Scaffold> Scaffold_List = new ArrayList<Scaffold>();
 	private String output_filename = "practice.xml";
-
+	private String container_type;
+	
+	
 	public void setInput(String[] input){
 
 		this.input_funcname=input[0];
 		this.input_func=input[1];
 	};
+	
+	
 	public void setOutput_filename(String s){this.output_filename=s;}
 	public String getOutput_filename() {return output_filename;};
 	public void init(){ //Parsing된 HTML로 Scaffold 객체 생성 및 정보 입력
@@ -35,6 +39,12 @@ public class Xml_main {
 		System.out.println("funcname is : " + input_funcname);
 		if(input_funcname.matches("std::.+::.+")){
 			isMember=true;
+			
+			  Pattern p = Pattern.compile( "(.+)::(.+)::(.+)");   // the pattern to search for
+			    Matcher m = p.matcher(input_funcname);
+			    this.container_type=m.group(2);
+			
+			
 		} else isMember=false;
 		String[] splitted=input_func.split("(;\ntemplate.+\\> )|(;\n)|(template.+\\>)"); //수정 https://en.cppreference.com/w/cpp/container/list/remove 로 테스트
 
@@ -42,7 +52,7 @@ public class Xml_main {
 		
 			for(int i=0; i<splitted.length; i++){
 				//if(!splitted[i].startsWith("template")) { //check
-
+				if(isMember==true) Scaffold_List.get(i).add_arguments(container_type);
 				Scaffold_List.add(new Scaffold());
 				//sl_count++;
 				Scaffold_List.get(i).set_isMemberFn(isMember);
@@ -84,11 +94,8 @@ public class Xml_main {
 
 				/*
 				String[] parts = splitted[i].split("((,\\sconst\\s)|\\)|\\s|(\\(\\s)|(,\\s))");
-
 				//output test
 				for (int k = 0; k < parts.length; k++) System.out.println("part[" + k + "] is : " + parts[k]);
-
-
 				Scaffold_List.get(i).set_return_type(parts[0]);
 				Scaffold_List.get(i).set_fn_name(parts[1]);
 				for (int j = 2; j <= (parts.length - 2); j++) {
@@ -181,3 +188,4 @@ public class Xml_main {
 
 
 }
+

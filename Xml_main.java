@@ -42,7 +42,7 @@ public class Xml_main {
 			
 			  Pattern p = Pattern.compile( "(.+)::(.+)::(.+)");   // the pattern to search for
 			    Matcher m = p.matcher(input_funcname);
-			    this.container_type=m.group(2);
+			   if(m.find()) this.container_type=m.group(2);
 			
 			
 		} else isMember=false;

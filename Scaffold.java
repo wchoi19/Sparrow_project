@@ -9,7 +9,7 @@ public class Scaffold {
     private String return_type;
     private String fn_name;
     private Vector <String> arguments = new Vector <String>();
-    
+
     public Scaffold() {}
     public Scaffold(boolean isMemberFn, String return_type, String fn_name, String arguments) {
         super();
@@ -42,13 +42,13 @@ public class Scaffold {
         this.arguments.add(arguments);
     }
     public int get_args_size(){
-    	return this.arguments.size();
+        return this.arguments.size();
     }
-    
+
     @Override
     public String toString() {
         return "function [return type=" + return_type + ", function name=" + fn_name + ", arguments=" + arguments + "]";
     }
-    
+
 
 }

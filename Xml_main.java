@@ -1,4 +1,6 @@
 package xml;
+//this is the test for git//
+
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -32,7 +34,7 @@ public class Xml_main {
 	};
 	public void setOutput_filename(String s){this.output_filename=s.replaceAll(":+","_") + ".xml";}
 	public String getOutput_filename() {return output_filename;};
-	public String init(){ //ParsingµÈ HTML·Î Scaffold °´Ã¼ »ý¼º ¹× Á¤º¸ ÀÔ·Â
+	public String init(){ //Parsingï¿½ï¿½ HTMLï¿½ï¿½ Scaffold ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½
 
 		boolean isMember;
 		//System.out.println("funcname is : " + input_funcname);
@@ -46,7 +48,7 @@ public class Xml_main {
 		String[] splitted=input_func.split("(\ntemplate.+\\> )|(\n)|(template.+\\>)"); //template
 		
 			for(int i=0; i<splitted.length; i++){
-				Scaffold_List.add(new Scaffold()); // ÁÙ¸¶´Ù Scaffold °´Ã¼ »ý¼º
+				Scaffold_List.add(new Scaffold()); // ï¿½Ù¸ï¿½ï¿½ï¿½ Scaffold ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
 				Scaffold_List.get(i).set_isMemberFn(isMember);
 				if(isMember) Scaffold_List.get(i).add_arguments(container_type);
 				System.out.println("\nsplitted[" + i +"] is : " + splitted[i] + "\n--------------------------------------------------------------");
@@ -97,14 +99,14 @@ public class Xml_main {
 		return input_funcname;
 }
     /**
-     * list¿¡ µé¾îÀÖ´Â À¯ÀúÁ¤º¸¸¦ xml¹®¼­·Î ¸¸µå´Â ¸Þ¼Òµå
+     * listï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ xmlï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¼Òµï¿½
      */
- 	public void write() { //Scaffold °´Ã¼µé¿¡ »óÀÀÇÏ´Â xml element¸¦ ¸¸µé±â À§ÇØ Scaffold_Element °´Ã¼ »ý¼º
+ 	public void write() { //Scaffold ï¿½ï¿½Ã¼ï¿½é¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ xml elementï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Scaffold_Element ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
         
         Document doc = new Document();
         ArrayList<Scaffold_Element> Scaffold_Elements = new ArrayList<Scaffold_Element>();
    
-        Element root = new Element("scaffolds"); //·çÆ® ¿¤¸®¸ÕÆ® »ý¼º
+        Element root = new Element("scaffolds"); //ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
         doc.setRootElement(root);
         
         for(int i =0; i<Scaffold_List.size(); i++){
@@ -141,9 +143,9 @@ public class Xml_main {
         }
         XMLOutputter xout = new XMLOutputter();
         Format fo = xout.getFormat();
-      //  fo.setEncoding("UTF-8"); //ÇÑ±ÛÀÎÄÚµù
-       fo.setIndent(" ");//µé¿©¾²±â
-       fo.setLineSeparator("\r\n");//ÁÙ¹Ù²Þ
+      //  fo.setEncoding("UTF-8"); //ï¿½Ñ±ï¿½ï¿½ï¿½ï¿½Úµï¿½
+       fo.setIndent(" ");//ï¿½é¿©ï¿½ï¿½ï¿½ï¿½
+       fo.setLineSeparator("\r\n");//ï¿½Ù¹Ù²ï¿½
        fo.setTextMode(Format.TextMode.TRIM);
 
 

@@ -13,9 +13,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-//// commit test comment
-
 public class Xml_main {
 	private String input_funcname;
 	private String input_func;
@@ -23,8 +20,7 @@ public class Xml_main {
 	private String output_filename = "practice.xml";
 	private String container_type;
 
-	public boolean inputIsValid;
-
+	public boolean inputIsValid; //checks if input from Scraper is a valid cppreference.com url that can be parsed.
 	public void setInput(String[] input){
 		if(input!=null) {
 			inputIsValid=true;
@@ -33,9 +29,8 @@ public class Xml_main {
 		} else {
 			inputIsValid=false;
 		}
-
 	};
-	public void setOutput_filename(String s){this.output_filename=s.replaceAll(":","_") + ".xml";}
+	public void setOutput_filename(String s){this.output_filename=s.replaceAll(":+","_") + ".xml";}
 	public String getOutput_filename() {return output_filename;};
 	public String init(){ //Parsing된 HTML로 Scaffold 객체 생성 및 정보 입력
 
@@ -43,18 +38,15 @@ public class Xml_main {
 		//System.out.println("funcname is : " + input_funcname);
 		if(input_funcname.matches("std::.+::.+")){
 			isMember=true;
-			Pattern memFuncPattern = Pattern.compile( "(.+)::(.+)::(.+)");   // the pattern to search for
+			Pattern memFuncPattern = Pattern.compile( "(.+)::(.+)::(.+)");   // pattern of member function names
 			Matcher memFuncMatcher = memFuncPattern.matcher(input_funcname);
 
 			if(memFuncMatcher.find()) this.container_type=memFuncMatcher.group(2);
 		} else isMember=false;
-		String[] splitted=input_func.split("(\ntemplate.+\\> )|(\n)|(template.+\\>)"); //수정 https://en.cppreference.com/w/cpp/container/list/remove 로 테스트
-
-		//int sl_count=0;
+		String[] splitted=input_func.split("(\ntemplate.+\\> )|(\n)|(template.+\\>)"); //template
 		
 			for(int i=0; i<splitted.length; i++){
-				Scaffold_List.add(new Scaffold());
-
+				Scaffold_List.add(new Scaffold()); // 줄마다 Scaffold 객체 생성
 				Scaffold_List.get(i).set_isMemberFn(isMember);
 				if(isMember) Scaffold_List.get(i).add_arguments(container_type);
 				System.out.println("\nsplitted[" + i +"] is : " + splitted[i] + "\n--------------------------------------------------------------");
@@ -79,10 +71,7 @@ public class Xml_main {
 					Pattern paramPattern = Pattern.compile(paramRegex);
 					Matcher paramMatcher = paramPattern.matcher(parameters);
 
-					int matchCount = 0;
-
 					while (paramMatcher.find()) {
-						matchCount++;
 
 						Scaffold_List.get(i).add_arguments(paramMatcher.group(2));
 						System.out.println("-------Argument Type is : " + paramMatcher.group(2));
@@ -120,13 +109,9 @@ public class Xml_main {
         
         for(int i =0; i<Scaffold_List.size(); i++){
 
-
         	Scaffold_Elements.add(new Scaffold_Element());
-
-
-        	//scaffold type
+        	//Scaffold type attribute(member function?)
 			Scaffold_Elements.get(i).SC.setAttribute("type", Scaffold_List.get(i).get_isMemberFn()? "1" : "0");
-
 
         	int args_size = Scaffold_List.get(i).get_args_size();
 
@@ -141,9 +126,7 @@ public class Xml_main {
             Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).ret_type);
             Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).args);
 
-
             for(int count=0; count<args_size; count++){
-
         		Scaffold_Elements.get(i).Argument_list.get(count).setText(Scaffold_List.get(i).get_arguments(count));
         		Scaffold_Elements.get(i).args.addContent(Scaffold_Elements.get(i).Argument_list.get(count));
         }
@@ -176,14 +159,11 @@ public class Xml_main {
 		while(true) {
 			Xml_main xml = new Xml_main();
 			xml.setInput(Scraper.scrap());
-
 			if (xml.inputIsValid) {
 				xml.setOutput_filename(xml.init());
-
 				try {
 					xml.write();
 					System.out.println("\nWrite successful. Saved as \"" + xml.getOutput_filename() + "\".");
-
 				} catch (Exception ee) {
 					System.out.println("Error - Write Unsuccessful");
 				}

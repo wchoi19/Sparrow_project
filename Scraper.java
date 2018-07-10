@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class Scraper {
     public static String[] scrap(){
-        while(true) {
+        //while(true) {
 
             //TAKE INPUT URL FROM CPPREFERENCE
             System.out.println("\nEnter cppreference.com url (enter 'exit' to end) :");
@@ -18,7 +18,7 @@ public class Scraper {
             String url = in.nextLine();
             if(url.equals("exit")) {
                 System.out.println("terminated.");
-                break;
+                System.exit(0);
             }
             System.out.println("You entered : " + url);
 
@@ -43,7 +43,7 @@ public class Scraper {
             } catch (Exception e) {
                 System.out.println("Error: Not a valid cppreference.com url");
             }
-        }
+        //}
         return null;
 
     }

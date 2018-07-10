@@ -23,17 +23,24 @@ public class Xml_main {
 	private String output_filename = "practice.xml";
 	private String container_type;
 
-	public void setInput(String[] input){
+	public boolean inputIsValid;
 
-		this.input_funcname=input[0];
-		this.input_func=input[1];
+	public void setInput(String[] input){
+		if(input!=null) {
+			inputIsValid=true;
+			this.input_funcname = input[0];
+			this.input_func = input[1];
+		} else {
+			inputIsValid=false;
+		}
+
 	};
-	public void setOutput_filename(String s){this.output_filename=s;}
+	public void setOutput_filename(String s){this.output_filename=s.replaceAll(":","_") + ".xml";}
 	public String getOutput_filename() {return output_filename;};
-	public void init(){ //Parsing된 HTML로 Scaffold 객체 생성 및 정보 입력
+	public String init(){ //Parsing된 HTML로 Scaffold 객체 생성 및 정보 입력
 
 		boolean isMember;
-		System.out.println("funcname is : " + input_funcname);
+		//System.out.println("funcname is : " + input_funcname);
 		if(input_funcname.matches("std::.+::.+")){
 			isMember=true;
 			Pattern memFuncPattern = Pattern.compile( "(.+)::(.+)::(.+)");   // the pattern to search for
@@ -98,6 +105,7 @@ public class Xml_main {
 				}
 
 		}
+		return input_funcname;
 }
     /**
      * list에 들어있는 유저정보를 xml문서로 만드는 메소드
@@ -165,16 +173,21 @@ public class Xml_main {
  	}
 
 	public static void main(String[] args) {
+		while(true) {
+			Xml_main xml = new Xml_main();
+			xml.setInput(Scraper.scrap());
 
-		Xml_main xml = new Xml_main();
-		xml.setInput(Scraper.scrap());
-		xml.init();
+			if (xml.inputIsValid) {
+				xml.setOutput_filename(xml.init());
 
-		try {
-			xml.write();
+				try {
+					xml.write();
+					System.out.println("\nWrite successful. Saved as \"" + xml.getOutput_filename() + "\".");
 
-		} catch (Exception ee){
-			System.out.println("Error - Write Unsuccessful");
+				} catch (Exception ee) {
+					System.out.println("Error - Write Unsuccessful");
+				}
+			}
 		}
 	}
 

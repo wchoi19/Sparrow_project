@@ -9,7 +9,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import java.util.ArrayList;
-import java.util.Map;
+//import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,8 +32,11 @@ public class Xml_main {
 	};
 	public void setOutput_filename(String s){this.output_filename=s.replaceAll(":+","_") + ".xml";}
 	public String getOutput_filename() {return output_filename;};
-	public String init(){ //Parsing�� HTML�� Scaffold ��ü ���� �� ���� �Է�
-
+	public String init(){ //Parsing占쏙옙 HTML占쏙옙 Scaffold 占쏙옙체 占쏙옙占쏙옙 占쏙옙 占쏙옙占쏙옙 占쌉뤄옙
+		
+		ArrayList <String> temp_check = new ArrayList <String> ();
+		String arg_temp=null;
+		
 		boolean isMember;
 		//System.out.println("funcname is : " + input_funcname);
 		if(input_funcname.matches("std::.+::.+")){
@@ -46,7 +49,7 @@ public class Xml_main {
 		String[] splitted=input_func.split("(\ntemplate.+\\> )|(\n)|(template.+\\>)"); //template
 
 		for(int i=0; i<splitted.length; i++){
-			Scaffold_List.add(new Scaffold()); // �ٸ��� Scaffold ��ü ����
+			Scaffold_List.add(new Scaffold()); // 占쌕몌옙占쏙옙 Scaffold 占쏙옙체 占쏙옙占쏙옙
 			Scaffold_List.get(i).set_isMemberFn(isMember);
 			if(isMember) Scaffold_List.get(i).add_arguments(container_type);
 			System.out.println("\nsplitted[" + i +"] is : " + splitted[i] + "\n--------------------------------------------------------------");
@@ -75,6 +78,7 @@ public class Xml_main {
 
 					Scaffold_List.get(i).add_arguments(paramMatcher.group(2));
 					System.out.println("-------Argument Type is : " + paramMatcher.group(2));
+					arg_temp+=paramMatcher.group(2);
 				}
 			} else {
 				Pattern noArgsPattern = Pattern.compile(noArgsRegex);
@@ -92,23 +96,32 @@ public class Xml_main {
 				}
 
 			}
-
+			//여기에서 확인해주고 return type을 "duplicate"이런거로 설정해준다음
+			//write 에서 return type이 duplicate이면 스킵해라 이렇게 만들면 될듯.
+			String check = Scaffold_List.get(i).get_return_type()+Scaffold_List.get(i).get_fn_name()+arg_temp;
+			if( !temp_check.contains(check) ){
+				temp_check.add(check);
+			}
+			else{
+				Scaffold_List.get(i).set_return_type("duplicate");
+			}
 		}
 		return input_funcname;
 	}
 	/**
-	 * list�� ����ִ� ���������� xml������ ����� �޼ҵ�
+	 * list占쏙옙 占쏙옙占쏙옙獵占� 占쏙옙占쏙옙占쏙옙占쏙옙占쏙옙 xml占쏙옙占쏙옙占쏙옙 占쏙옙占쏙옙占� 占쌨소듸옙
 	 */
-	public void write() { //Scaffold ��ü�鿡 �����ϴ� xml element�� ����� ���� Scaffold_Element ��ü ����
+	public void write() { //Scaffold 占쏙옙체占썽에 占쏙옙占쏙옙占싹댐옙 xml element占쏙옙 占쏙옙占쏙옙占� 占쏙옙占쏙옙 Scaffold_Element 占쏙옙체 占쏙옙占쏙옙
 
 		Document doc = new Document();
 		ArrayList<Scaffold_Element> Scaffold_Elements = new ArrayList<Scaffold_Element>();
 
-		Element root = new Element("scaffolds"); //��Ʈ ������Ʈ ����
+		Element root = new Element("scaffolds"); //占쏙옙트 占쏙옙占쏙옙占쏙옙트 占쏙옙占쏙옙
 		doc.setRootElement(root);
 
 		for(int i =0; i<Scaffold_List.size(); i++){
-
+		if(Scaffold_List.get(i).get_return_type()!="duplicate"){
+			
 			Scaffold_Elements.add(new Scaffold_Element());
 			//Scaffold type attribute(member function?)
 			Scaffold_Elements.get(i).SC.setAttribute("type", Scaffold_List.get(i).get_isMemberFn()? "1" : "0");
@@ -141,9 +154,9 @@ public class Xml_main {
 		}
 		XMLOutputter xout = new XMLOutputter();
 		Format fo = xout.getFormat();
-		//  fo.setEncoding("UTF-8"); //�ѱ����ڵ�
-		fo.setIndent(" ");//�鿩����
-		fo.setLineSeparator("\r\n");//�ٹٲ�
+		//  fo.setEncoding("UTF-8"); //占싼깍옙占쏙옙占쌘듸옙
+		fo.setIndent(" ");//占썽여占쏙옙占쏙옙
+		fo.setLineSeparator("\r\n");//占쌕바뀐옙
 		fo.setTextMode(Format.TextMode.TRIM);
 
 
@@ -152,6 +165,7 @@ public class Xml_main {
 			xout.output(doc, new FileWriter(this.getOutput_filename()));
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
 		}
 	}
 

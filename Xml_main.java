@@ -8,15 +8,17 @@ import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 //import java.util.Map;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Xml_main {
 	private String input_funcname;
 	private String input_func;
-	private ArrayList <Scaffold> Scaffold_List = new ArrayList<Scaffold>();
+	//private ArrayList <Scaffold> Scaffold_List = new ArrayList<Scaffold>();
 	private String output_filename = "practice.xml";
 	private String container_type;
 
@@ -32,8 +34,14 @@ public class Xml_main {
 	};
 	public void setOutput_filename(String s){this.output_filename=s.replaceAll(":+","_") + ".xml";}
 	public String getOutput_filename() {return output_filename;};
-	public String init(){ //Parsing占쏙옙 HTML占쏙옙 Scaffold 占쏙옙체 占쏙옙占쏙옙 占쏙옙 占쏙옙占쏙옙 占쌉뤄옙
-		
+	public static ArrayList<Scaffold> init(String[] input){ //Parsing占쏙옙 HTML占쏙옙 Scaffold 占쏙옙체 占쏙옙占쏙옙 占쏙옙 占쏙옙占쏙옙 占쌉뤄옙
+
+		String input_funcname = input[0];
+		String input_func = input[1];
+
+		ArrayList <Scaffold> Scaffold_List = new ArrayList<Scaffold>();
+		String container_type="";
+
 		ArrayList <String> temp_check = new ArrayList <String> ();
 		String arg_temp=null;
 		
@@ -44,7 +52,7 @@ public class Xml_main {
 			Pattern memFuncPattern = Pattern.compile( "(.+)::(.+)::(.+)");   // pattern of member function names
 			Matcher memFuncMatcher = memFuncPattern.matcher(input_funcname);
 
-			if(memFuncMatcher.find()) this.container_type=memFuncMatcher.group(2);
+			if(memFuncMatcher.find()) container_type=memFuncMatcher.group(2);
 		} else isMember=false;
 		String[] splitted=input_func.split("(\ntemplate.+\\> )|(\n)|(template.+\\>)"); //template
 
@@ -106,12 +114,12 @@ public class Xml_main {
 				Scaffold_List.get(i).set_return_type("duplicate");
 			}
 		}
-		return input_funcname;
+		return Scaffold_List;
 	}
 	/**
 	 * list占쏙옙 占쏙옙占쏙옙獵占� 占쏙옙占쏙옙占쏙옙占쏙옙占쏙옙 xml占쏙옙占쏙옙占쏙옙 占쏙옙占쏙옙占� 占쌨소듸옙
 	 */
-	public void write() { //Scaffold 占쏙옙체占썽에 占쏙옙占쏙옙占싹댐옙 xml element占쏙옙 占쏙옙占쏙옙占� 占쏙옙占쏙옙 Scaffold_Element 占쏙옙체 占쏙옙占쏙옙
+	public static void write(ArrayList<Scaffold> slToWrite) { //Scaffold 占쏙옙체占썽에 占쏙옙占쏙옙占싹댐옙 xml element占쏙옙 占쏙옙占쏙옙占� 占쏙옙占쏙옙 Scaffold_Element 占쏙옙체 占쏙옙占쏙옙
 
 		Document doc = new Document();
 		ArrayList<Scaffold_Element> Scaffold_Elements = new ArrayList<Scaffold_Element>();
@@ -119,20 +127,20 @@ public class Xml_main {
 		Element root = new Element("scaffolds"); //占쏙옙트 占쏙옙占쏙옙占쏙옙트 占쏙옙占쏙옙
 		doc.setRootElement(root);
 
-		for(int i =0; i<Scaffold_List.size(); i++){
-		if(Scaffold_List.get(i).get_return_type()!="duplicate"){
+		for(int i =0; i<slToWrite.size(); i++){
+		if(slToWrite.get(i).get_return_type()!="duplicate"){
 			
 			Scaffold_Elements.add(new Scaffold_Element());
 			//Scaffold type attribute(member function?)
-			Scaffold_Elements.get(i).SC.setAttribute("type", Scaffold_List.get(i).get_isMemberFn()? "1" : "0");
+			Scaffold_Elements.get(i).SC.setAttribute("type", slToWrite.get(i).get_isMemberFn()? "1" : "0");
 
-			int args_size = Scaffold_List.get(i).get_args_size();
+			int args_size = slToWrite.get(i).get_args_size();
 
 			for(int j=0; j<args_size; j++)
 				Scaffold_Elements.get(i).Argument_list.add(new Element("arg_type"));
 
-			Scaffold_Elements.get(i).ret_type.setText(Scaffold_List.get(i).get_return_type());
-			Scaffold_Elements.get(i).func_name.setText(Scaffold_List.get(i).get_fn_name());
+			Scaffold_Elements.get(i).ret_type.setText(slToWrite.get(i).get_return_type());
+			Scaffold_Elements.get(i).func_name.setText(slToWrite.get(i).get_fn_name());
 
 			root.addContent(Scaffold_Elements.get(i).SC);
 			Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).func_name);
@@ -140,7 +148,7 @@ public class Xml_main {
 			Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).args);
 
 			for(int count=0; count<args_size; count++){
-				Scaffold_Elements.get(i).Argument_list.get(count).setText(Scaffold_List.get(i).get_arguments(count));
+				Scaffold_Elements.get(i).Argument_list.get(count).setText(slToWrite.get(i).get_arguments(count));
 				Scaffold_Elements.get(i).args.addContent(Scaffold_Elements.get(i).Argument_list.get(count));
 			}
 
@@ -162,7 +170,7 @@ public class Xml_main {
 
 		try {
 			xout.setFormat(fo);
-			xout.output(doc, new FileWriter(this.getOutput_filename()));
+			xout.output(doc, new FileWriter("practice.xml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -171,17 +179,25 @@ public class Xml_main {
 
 	public static void main(String[] args) {
 		while(true) {
-			Xml_main xml = new Xml_main();
-			xml.setInput(Scraper.scrap());
-			if (xml.inputIsValid) {
-				xml.setOutput_filename(xml.init());
+			ArrayList <Scaffold> Global_Scaffold_List = new ArrayList<Scaffold>();
+			Queue<String> linkQueue = MemFuncUrlScraper.MemFuncUrlScrape();
+
+
+			//queue = url scraper가 리턴한 것들
+			//while scraped url queue is not empty,
+			while(!linkQueue.isEmpty()){
+				Global_Scaffold_List.addAll(Xml_main.init(Scraper.scrap(linkQueue.poll())));
+			}
+
+			//if (xml.inputIsValid) {
+				//xml.setOutput_filename(xml.init());
 				try {
-					xml.write();
-					System.out.println("\nWrite successful. Saved as \"" + xml.getOutput_filename() + "\".");
+					Xml_main.write(Global_Scaffold_List);
+					//System.out.println("\nWrite successful. Saved as \"" + xml.getOutput_filename() + "\".");
 				} catch (Exception ee) {
 					System.out.println("Error - Write Unsuccessful");
 				}
-			}
+			//}
 		}
 	}
 

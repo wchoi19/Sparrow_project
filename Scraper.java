@@ -9,18 +9,12 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Scraper {
-    public static String[] scrap(){
+    public static String[] scrap(String url){
         //while(true) {
 
         //TAKE INPUT URL FROM CPPREFERENCE
-        System.out.println("\nEnter cppreference.com url (enter 'exit' to end) :");
-        Scanner in = new Scanner(System.in);
-        String url = in.nextLine();
-        if(url.equals("exit")) {
-            System.out.println("terminated.");
-            System.exit(0);
-        }
-        System.out.println("You entered : " + url);
+
+        System.out.println("URL INPUT : " + url);
 
         //PARSE FUNCTION NAME AND ARGUMENTS FROM HTML
         try {

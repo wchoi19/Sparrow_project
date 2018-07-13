@@ -83,7 +83,6 @@ public class Xml_main {
 				Matcher paramMatcher = paramPattern.matcher(parameters);
 
 				while (paramMatcher.find()) {
-
 					Scaffold_List.get(i).add_arguments(paramMatcher.group(2));
 					System.out.println("-------Argument Type is : " + paramMatcher.group(2));
 					arg_temp+=paramMatcher.group(2);
@@ -126,40 +125,50 @@ public class Xml_main {
 
 		Element root = new Element("scaffolds"); //占쏙옙트 占쏙옙占쏙옙占쏙옙트 占쏙옙占쏙옙
 		doc.setRootElement(root);
+		int i=0;
+		for(Scaffold scToWrite : slToWrite) {
+				System.out.println("[WRITE] return type is : " + scToWrite.get_return_type());
+			if (scToWrite.get_return_type() != "duplicate") {
 
-		for(int i =0; i<slToWrite.size(); i++){
-		if(slToWrite.get(i).get_return_type()!="duplicate"){
-			
-			Scaffold_Elements.add(new Scaffold_Element());
-			//Scaffold type attribute(member function?)
-			Scaffold_Elements.get(i).SC.setAttribute("type", slToWrite.get(i).get_isMemberFn()? "1" : "0");
 
-			int args_size = slToWrite.get(i).get_args_size();
+				Scaffold_Elements.add(new Scaffold_Element());
 
-			for(int j=0; j<args_size; j++)
-				Scaffold_Elements.get(i).Argument_list.add(new Element("arg_type"));
+				//Scaffold type attribute(member function?)
+				Scaffold_Elements.get(i).SC.setAttribute("type", slToWrite.get(i).get_isMemberFn() ? "1" : "0");
 
-			Scaffold_Elements.get(i).ret_type.setText(slToWrite.get(i).get_return_type());
-			Scaffold_Elements.get(i).func_name.setText(slToWrite.get(i).get_fn_name());
+				int args_size = slToWrite.get(i).get_args_size();
 
-			root.addContent(Scaffold_Elements.get(i).SC);
-			Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).func_name);
-			Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).ret_type);
-			Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).args);
+				for (int j = 0; j < args_size; j++)
+					Scaffold_Elements.get(i).Argument_list.add(new Element("arg_type"));
 
-			for(int count=0; count<args_size; count++){
-				Scaffold_Elements.get(i).Argument_list.get(count).setText(slToWrite.get(i).get_arguments(count));
-				Scaffold_Elements.get(i).args.addContent(Scaffold_Elements.get(i).Argument_list.get(count));
+				Scaffold_Elements.get(i).ret_type.setText(slToWrite.get(i).get_return_type());
+				Scaffold_Elements.get(i).func_name.setText(slToWrite.get(i).get_fn_name());
+
+				root.addContent(Scaffold_Elements.get(i).SC);
+				Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).func_name);
+				Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).ret_type);
+				Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).args);
+
+				for (int count = 0; count < args_size; count++) {
+					Scaffold_Elements.get(i).Argument_list.get(count).setText(slToWrite.get(i).get_arguments(count));
+					Scaffold_Elements.get(i).args.addContent(Scaffold_Elements.get(i).Argument_list.get(count));
+				}
+
+				Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).body);
+				Scaffold_Elements.get(i).body.addContent(Scaffold_Elements.get(i).func);
+				Scaffold_Elements.get(i).func.addContent(Scaffold_Elements.get(i).func_args);
+				Scaffold_Elements.get(i).func_args.addContent(Scaffold_Elements.get(i).func_arg);
+
+
+				i++;
+
+
+
 			}
-
-			Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).body);
-			Scaffold_Elements.get(i).body.addContent(Scaffold_Elements.get(i).func);
-			Scaffold_Elements.get(i).func.addContent(Scaffold_Elements.get(i).func_args);
-			Scaffold_Elements.get(i).func_args.addContent(Scaffold_Elements.get(i).func_arg);
-
-
-
 		}
+
+		System.out.println("i is : " + i);
+
 		XMLOutputter xout = new XMLOutputter();
 		Format fo = xout.getFormat();
 		//  fo.setEncoding("UTF-8"); //占싼깍옙占쏙옙占쌘듸옙
@@ -174,29 +183,28 @@ public class Xml_main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		}
+
 	}
 
 	public static void main(String[] args) {
 		while(true) {
 			ArrayList <Scaffold> Global_Scaffold_List = new ArrayList<Scaffold>();
 			Queue<String> linkQueue = MemFuncUrlScraper.MemFuncUrlScrape();
-
-
+			for(String s : linkQueue) {
+				System.out.println("queue element : " + s);
+			}
+			System.out.println("linkQueue size is : " + linkQueue.size());
 			//queue = url scraper가 리턴한 것들
 			//while scraped url queue is not empty,
 			while(!linkQueue.isEmpty()){
 				Global_Scaffold_List.addAll(Xml_main.init(Scraper.scrap(linkQueue.poll())));
 			}
 
+			Xml_main.write(Global_Scaffold_List);
+
 			//if (xml.inputIsValid) {
 				//xml.setOutput_filename(xml.init());
-				try {
-					Xml_main.write(Global_Scaffold_List);
-					//System.out.println("\nWrite successful. Saved as \"" + xml.getOutput_filename() + "\".");
-				} catch (Exception ee) {
-					System.out.println("Error - Write Unsuccessful");
-				}
+
 			//}
 		}
 	}

@@ -29,8 +29,9 @@ public class MemFuncUrlScraper {
                 String link = row.attr("href");
                 System.out.println("link is : https://en.cppreference.com" + link);
                 urlResults.add("https://en.cppreference.com" + link);
-                return urlResults;
+
             }
+            return urlResults;
         } catch (Exception e) {
             System.out.println("Error: Not a valid cppreference.com url");
         }

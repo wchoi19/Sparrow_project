@@ -38,7 +38,7 @@ public class Scraper {
             System.out.println("Error: Not a valid cppreference.com url");
         }
         //}
-        return null;
+        return new String[] {"ERROR", "ERROR"};
 
     }
 }

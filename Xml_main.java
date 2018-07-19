@@ -43,7 +43,7 @@ public class Xml_main {
 		String container_type="";
 
 		ArrayList <String> temp_check = new ArrayList <String> ();
-		String arg_temp=null;
+		String arg_temp="	";
 		
 		boolean isMember;
 		//System.out.println("funcname is : " + input_funcname);
@@ -63,6 +63,7 @@ public class Xml_main {
 			System.out.println("\nsplitted[" + i +"] is : " + splitted[i] + "\n--------------------------------------------------------------");
 
 			String noArgsRegex="([^(]+\\s)?(\\S+)(\\s)(\\S+)\\(\\)(.*?);";
+
 			if(!splitted[i].matches(noArgsRegex)) { //if function has 1<= arguments
 				Pattern rowPattern = Pattern.compile("(\\S+\\s)?(\\S+)(\\s)(\\S+?)(\\(\\s)(.*?\\s\\))(.+)?");
 				Matcher rowMatcher = rowPattern.matcher(splitted[i]);
@@ -126,31 +127,32 @@ public class Xml_main {
 		Element root = new Element("scaffolds"); //占쏙옙트 占쏙옙占쏙옙占쏙옙트 占쏙옙占쏙옙
 		doc.setRootElement(root);
 		int i=0;
+		System.out.println("slToWrite size is : " + slToWrite.size());
 		for(Scaffold scToWrite : slToWrite) {
-				System.out.println("[WRITE] return type is : " + scToWrite.get_return_type());
-			if (scToWrite.get_return_type() != "duplicate") {
-
-
+				System.out.println(scToWrite.get_fn_name() + " ------ [WRITE] return type is : " + scToWrite.get_return_type());
+//				System.out.println(scToWrite.get_return_type().equals("duplicate"));
+			if (scToWrite.get_return_type()!="duplicate") {
 				Scaffold_Elements.add(new Scaffold_Element());
 
 				//Scaffold type attribute(member function?)
-				Scaffold_Elements.get(i).SC.setAttribute("type", slToWrite.get(i).get_isMemberFn() ? "1" : "0");
+				Scaffold_Elements.get(i).SC.setAttribute("type", scToWrite.get_isMemberFn() ? "1" : "0");
 
-				int args_size = slToWrite.get(i).get_args_size();
+				int args_size = scToWrite.get_args_size();
 
 				for (int j = 0; j < args_size; j++)
 					Scaffold_Elements.get(i).Argument_list.add(new Element("arg_type"));
 
-				Scaffold_Elements.get(i).ret_type.setText(slToWrite.get(i).get_return_type());
-				Scaffold_Elements.get(i).func_name.setText(slToWrite.get(i).get_fn_name());
+				Scaffold_Elements.get(i).ret_type.setText(scToWrite.get_return_type());
+				Scaffold_Elements.get(i).func_name.setText(scToWrite.get_fn_name());
 
 				root.addContent(Scaffold_Elements.get(i).SC);
 				Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).func_name);
 				Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).ret_type);
 				Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).args);
 
+
 				for (int count = 0; count < args_size; count++) {
-					Scaffold_Elements.get(i).Argument_list.get(count).setText(slToWrite.get(i).get_arguments(count));
+					Scaffold_Elements.get(i).Argument_list.get(count).setText(scToWrite.get_arguments(count));
 					Scaffold_Elements.get(i).args.addContent(Scaffold_Elements.get(i).Argument_list.get(count));
 				}
 
@@ -183,7 +185,6 @@ public class Xml_main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public static void main(String[] args) {
@@ -199,6 +200,14 @@ public class Xml_main {
 			while(!linkQueue.isEmpty()){
 				Global_Scaffold_List.addAll(Xml_main.init(Scraper.scrap(linkQueue.poll())));
 			}
+
+			System.out.println("GSL size is : " + Global_Scaffold_List.size());
+
+			for(Scaffold gs : Global_Scaffold_List){
+				System.out.println("GSL fn name : " + gs.get_fn_name());
+				System.out.println("GSL ret_type : " + gs.get_return_type());
+			}
+
 
 			Xml_main.write(Global_Scaffold_List);
 

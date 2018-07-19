@@ -23,13 +23,16 @@ public class MemFuncUrlScraper {
         try {
             final Document document = Jsoup.connect(url).get();
             Queue<String> urlResults=new LinkedList<String>();
+            String currHeader = "default";
 
             //PARSE HREF LINKS OF NTH ELEMENT
-            for (Element row : document.select("div.t-navbar-head:nth-child(3n) table.t-nv-begin tr.t-nv a")){
-                String link = row.attr("href");
-                System.out.println("link is : https://en.cppreference.com" + link);
-                urlResults.add("https://en.cppreference.com" + link);
-
+            for (Element row : document.select("div.t-navbar-head:nth-child(3n) table.t-nv-begin tr")){
+                if(row.hasClass("t-nv-h2")) currHeader=row.select("td").text(); // if it is a header row, set the current header to the text of the row
+                else if(!(currHeader.equals("Element access")||currHeader.equals("default")) && row.hasClass("t-nv")) {
+                    String link = row.select("a").attr("href");
+                    System.out.println("link is : https://en.cppreference.com" + link);
+                    urlResults.add("https://en.cppreference.com" + link);
+                }
             }
             return urlResults;
         } catch (Exception e) {

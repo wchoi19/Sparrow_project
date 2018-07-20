@@ -63,6 +63,7 @@ public class Xml_main {
 			System.out.println("\nsplitted[" + i +"] is : " + splitted[i] + "\n--------------------------------------------------------------");
 
 			String noArgsRegex="([^(]+\\s)?(\\S+)(\\s)(\\S+)\\(\\)(.*?);";
+			String spZeroRegex="(^|[^A-Za-z]+)(T)($|[^A-Za-z]+)";
 
 			if(!splitted[i].matches(noArgsRegex)) { //if function has 1<= arguments
 				Pattern rowPattern = Pattern.compile("(\\S+\\s)?(\\S+)(\\s)(\\S+?)(\\(\\s)(.*?\\s\\))(.+)?");
@@ -83,10 +84,20 @@ public class Xml_main {
 				Pattern paramPattern = Pattern.compile(paramRegex);
 				Matcher paramMatcher = paramPattern.matcher(parameters);
 
+				Pattern spZeroPattern=Pattern.compile(spZeroRegex);
+
+
 				while (paramMatcher.find()) {
-					Scaffold_List.get(i).add_arguments(paramMatcher.group(2));
-					System.out.println("-------Argument Type is : " + paramMatcher.group(2));
-					arg_temp+=paramMatcher.group(2);
+					String foundParam = paramMatcher.group(2);
+					Matcher spZeroMatcher=spZeroPattern.matcher(foundParam);
+					if (spZeroMatcher.find()) {
+						System.out.println("_SPARROW_ZERO_ case found. match is : " + spZeroMatcher.group());
+						foundParam=foundParam.replaceAll(spZeroRegex,"$1_SPARROW_ZERO_$3");
+					}
+
+					Scaffold_List.get(i).add_arguments(foundParam);
+					System.out.println("-------Argument Type is : " + foundParam);
+					arg_temp+=foundParam;
 				}
 			} else {
 				Pattern noArgsPattern = Pattern.compile(noArgsRegex);

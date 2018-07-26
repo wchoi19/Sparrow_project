@@ -15,9 +15,10 @@ public class Scaffold_Element {
     public Element body = new Element("body");
     public Element func = new Element("func");
     public Element func_args = new Element("args");
-    public Element func_arg = new Element("arg");
+    //public Element func_arg = new Element("arg");
 
     public ArrayList<Element> Argument_list = new ArrayList<Element>();
+    public ArrayList<Element> Func_arg_list = new ArrayList<Element>();
 
 
 

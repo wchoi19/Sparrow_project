@@ -21,6 +21,7 @@ public class MemFuncUrlScraper {
 
         //PARSE FUNCTION NAME AND ARGUMENTS FROM HTML
         try {
+            System.out.println("memfuncurlscrape starting...");
             final Document document = Jsoup.connect(url).get();
             Queue<String> urlResults=new LinkedList<String>();
             String currHeader = "default";
@@ -34,6 +35,7 @@ public class MemFuncUrlScraper {
                     urlResults.add("https://en.cppreference.com" + link);
                 }
             }
+            System.out.println("memfuncurlscrape ended...");
             return urlResults;
         } catch (Exception e) {
             System.out.println("Error: Not a valid cppreference.com url");

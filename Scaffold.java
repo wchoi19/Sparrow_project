@@ -8,9 +8,11 @@ import java.util.Vector;
 public class Scaffold {
 
     private boolean isMemberFn=false;
+    private String full_row;
     private String return_type;
     private String fn_name;
     private Vector <String> arguments = new Vector <String>();
+
 
     public Scaffold() {}
     public Scaffold(boolean isMemberFn, String return_type, String fn_name, String arguments) {
@@ -20,7 +22,8 @@ public class Scaffold {
         this.fn_name = fn_name;
         this.arguments.add(arguments);
     }
-
+    public void set_full_row(String s){ full_row=s; }
+    public String get_full_row(){ return full_row; }
     public boolean get_isMemberFn() { return isMemberFn; }
     public void set_isMemberFn(boolean bool){
         this.isMemberFn=bool;

@@ -30,9 +30,6 @@ public class Scraper {
                 result_functions += title + "\n";
             }
 
-
-
-
             return new String[] {result_func_name,result_functions};
         } catch (Exception e) {
             System.out.println("Error: Not a valid cppreference.com url");

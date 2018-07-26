@@ -6,23 +6,31 @@ import javafx.util.Pair;
 
 
 public class hash_map {
-	
+
 	private HashMap <String, List<Pair<String, ArrayList<String>>>> mapping = new HashMap<> ();
-	
+	int first=0;
+	int second=0;
 	public void Construct(String container, String function, ArrayList<String> args){
-		
-		ArrayList<String> temp = new ArrayList<String> (args);
-		Pair<String, ArrayList<String> > pair_k = new Pair<> (function, temp);
-		
-		  if (temp.contains(container))
+		System.out.println("Construct starting...");
+		System.out.println("container : " + container + " function : " + function);
+		//ArrayList<String> temp = new ArrayList<String> (args);
+		Pair<String, ArrayList<String> > pair_k = new Pair<> (function, args);
+
+		  if (mapping.containsKey(container))
 	      {
-	         List<Pair<String, ArrayList<String>>> values = mapping.get(container);
-	         values.add(pair_k);
-	         mapping.put(container, values);
+			first++;
+			System.out.println("first : " + first);
+	        /* List<Pair<String, ArrayList<String>>> values = mapping.get(container);
+	         values.add(pair_k);*/
+	         mapping.get(container).add(pair_k);
+	         //mapping.put(container, values);
 	      }
 	  
 	      else
 	      {
+			  second++;
+			  System.out.println("second : " + second);
+
 	         List <Pair<String, ArrayList<String>>> values = new ArrayList<> ();
 	         values.add(pair_k);
 	         mapping.put(container, values);

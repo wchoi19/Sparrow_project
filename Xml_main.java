@@ -3,6 +3,7 @@ package xml;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import javafx.util.Pair;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -11,6 +12,8 @@ import org.jdom2.output.XMLOutputter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 //import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,6 +24,7 @@ public class Xml_main {
 	//private ArrayList <Scaffold> Scaffold_List = new ArrayList<Scaffold>();
 	private String output_filename = "practice.xml";
 	private String container_type;
+	private static HashMap<String, List<Pair<String, ArrayList<String>>>> HM = new HashMap<String, List<Pair<String, ArrayList<String>>>>();
 
 	public boolean inputIsValid; //checks if input from Scraper is a valid cppreference.com url that can be parsed.
 	public void setInput(String[] input){
@@ -199,6 +203,9 @@ public class Xml_main {
 	}
 
 	public static void main(String[] args) {
+		HM = ExcelReader.ReadExcel();// enter file name as argument;
+
+
 		while(true) {
 			ArrayList <Scaffold> Global_Scaffold_List = new ArrayList<Scaffold>();
 			Queue<String> linkQueue = MemFuncUrlScraper.MemFuncUrlScrape();

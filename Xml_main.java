@@ -93,7 +93,7 @@ public class Xml_main {
                 Matcher paramMatcher = paramPattern.matcher(parameters);
 
                 Pattern spZeroPattern=Pattern.compile(spZeroRegex);
-                
+
                 while (paramMatcher.find()) {
                     String foundParam = paramMatcher.group(2);
                     Matcher spZeroMatcher=spZeroPattern.matcher(foundParam);
@@ -222,10 +222,11 @@ public class Xml_main {
             System.out.println("i is : " + i);
             System.out.println("error name is : " + ExcelReaderResult.getKey());
 
+            //WRITE XML
             XMLOutputter xout = new XMLOutputter();
             Format fo = xout.getFormat();
             //  fo.setEncoding("UTF-8"); //占싼깍옙占쏙옙占쌘듸옙
-            fo.setIndent(" ");//占썽여占쏙옙占쏙옙
+            fo.setIndent("    ");//占썽여占쏙옙占쏙옙
             fo.setLineSeparator("\r\n");//占쌕바뀐옙
             fo.setTextMode(Format.TextMode.TRIM);
 
@@ -247,8 +248,7 @@ public class Xml_main {
 				System.out.println("queue element : " + s);
 			}
 			System.out.println("urlQueue size is : " + urlQueue.size());
-			//queue = url scraper가 리턴한 것들
-			//while scraped url queue is not empty,
+
 			while(!urlQueue.isEmpty()){
 
 				Global_Scaffold_List.addAll(Xml_main.init(Scraper.scrap(urlQueue.poll())));
@@ -262,10 +262,6 @@ public class Xml_main {
 
 			Xml_main.write(Global_Scaffold_List);
 
-			//if (xml.inputIsValid) {
-				//xml.setOutput_filename(xml.init());
-
-			//}
 		}
 	}
 

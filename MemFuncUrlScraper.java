@@ -5,7 +5,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class MemFuncUrlScraper {
     public static Queue<String> MemFuncUrlScrape(){

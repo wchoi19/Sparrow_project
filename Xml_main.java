@@ -24,7 +24,9 @@ public class Xml_main {
     //private ArrayList <Scaffold> Scaffold_List = new ArrayList<Scaffold>();
     private String output_filename = "practice.xml";
     private static String container_type;
-    private static HashMap<String, List<Pair<String, ArrayList<String>>>> HM = new HashMap<String, List<Pair<String, ArrayList<String>>>>();
+    private static Pair<String, HashMap <String, List<Pair<String, ArrayList<String>>>>> ExcelReaderResult = ExcelReader.ReadExcel("C:/Exception/invalid_iterator_list.xlsx");
+    private static HashMap<String, List<Pair<String, ArrayList<String>>>> HM = ExcelReaderResult.getValue();
+    private static String errorName=ExcelReaderResult.getKey();
 
     public boolean inputIsValid; //checks if input from Scraper is a valid cppreference.com url that can be parsed.
     public void setInput(String[] input){
@@ -91,8 +93,7 @@ public class Xml_main {
                 Matcher paramMatcher = paramPattern.matcher(parameters);
 
                 Pattern spZeroPattern=Pattern.compile(spZeroRegex);
-
-
+                
                 while (paramMatcher.find()) {
                     String foundParam = paramMatcher.group(2);
                     Matcher spZeroMatcher=spZeroPattern.matcher(foundParam);
@@ -148,75 +149,78 @@ public class Xml_main {
         for(Scaffold scToWrite : slToWrite) {
             System.out.println(scToWrite.get_fn_name() + " ------ [WRITE] return type is : " + scToWrite.get_return_type());
 //				System.out.println(scToWrite.get_return_type().equals("duplicate"));
-            if (scToWrite.get_return_type() != "duplicate") {
+            if (scToWrite.get_return_type() != "duplicate") { // check duplicate
                 String full_row_temp = scToWrite.get_full_row();
 
+                //----------Scaffold_Element 객체 생성
                 Scaffold_Elements.add(new Scaffold_Element());
-                //Scaffold type attribute(member function?)
+
+                //----------<scaffold>
                 Scaffold_Elements.get(i).SC.setAttribute("type", scToWrite.get_isMemberFn() ? "1" : "0");
+                root.addContent(Scaffold_Elements.get(i).SC);
 
+                //----------<func_name> & <ret_type>
+                Scaffold_Elements.get(i).ret_type.setText(scToWrite.get_return_type());
+                Scaffold_Elements.get(i).func_name.setText(scToWrite.get_fn_name());
+                Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).func_name);
+                Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).ret_type);
+
+                //----------<args>
                 int args_size = scToWrite.get_args_size();
-
                 for (int j = 0; j < args_size; j++)
                     Scaffold_Elements.get(i).Argument_list.add(new Element("arg_type"));
 
-                Scaffold_Elements.get(i).ret_type.setText(scToWrite.get_return_type());
-                Scaffold_Elements.get(i).func_name.setText(scToWrite.get_fn_name());
-
-                root.addContent(Scaffold_Elements.get(i).SC);
-                Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).func_name);
-                Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).ret_type);
                 Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).args);
-
-
                 for (int count = 0; count < args_size; count++) {
                     Scaffold_Elements.get(i).Argument_list.get(count).setText(scToWrite.get_arguments(count));
                     Scaffold_Elements.get(i).args.addContent(Scaffold_Elements.get(i).Argument_list.get(count));
                 }
 
+                //----------<body>
                 Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).body);
                 Scaffold_Elements.get(i).body.addContent(Scaffold_Elements.get(i).func);
                 Scaffold_Elements.get(i).func.addContent(Scaffold_Elements.get(i).func_args);
 
-
-                //TODO
                 System.out.println("container_type is : " + container_type);
-                List<Pair<String, ArrayList<String>>> argslist = HM.get(container_type);
-                for(Pair funcpair : argslist){
+                List<Pair<String, ArrayList<String>>> FuncRowList = HM.get(container_type); //get function formats from sheet that match container type
+                /*for(Pair funcpair : FuncRowList){
                     System.out.println("key of pair is : " + funcpair.getKey());
                     System.out.println("full_row_temp : " + full_row_temp);
-                }
-                System.out.println("argslist.size() is : " + argslist.size());
-                ArrayList<String> temp = null;
+                }*/
+                System.out.println("FuncRowList.size() is : " + FuncRowList.size());
+                ArrayList<String> tempArgNumList = null; //temp container to store arg_nums from sheet
 
-                for (int count = 0; count < argslist.size(); count++) {
-                    if (argslist.get(count).getKey().equals(full_row_temp)) {
-                        temp = argslist.get(count).getValue();
+                for (int count = 0; count < FuncRowList.size(); count++) {
+                    if (FuncRowList.get(count).getKey().equals(full_row_temp)) { //if function format matches scraped row
+                        tempArgNumList = FuncRowList.get(count).getValue(); // store arg_num list
                         System.out.println("invaliditer found");
+                        //System.out.println(tempArgNumList + " ---- " + FuncRowList.get(count).getKey());
                         break;
                     }
                 }
 
-
-                if (temp != null) {
-
-                    for (int count = 0; count < temp.size(); count++) {
+                if (tempArgNumList != null) {
+                    Scaffold_Elements.get(i).func.setAttribute("type", errorName);
+                    for (int count = 0; count < tempArgNumList.size(); count++) { //
                         Scaffold_Elements.get(i).Func_arg_list.add(new Element("arg"));
                     }
-
-                    for (int count = 0; count < temp.size(); count++) {
-                        //TODO
-                        Scaffold_Elements.get(i).Func_arg_list.get(count).setAttribute("num", temp.get(count));
+                    for (int count = 0; count < tempArgNumList.size(); count++) {
+                        Scaffold_Elements.get(i).Func_arg_list.get(count).setAttribute("num", tempArgNumList.get(count));
                         Scaffold_Elements.get(i).func_args.addContent(Scaffold_Elements.get(i).Func_arg_list.get(count));
                     }
 
                 }
+
+                //----------<return>
+                Scaffold_Elements.get(i).ret_urn.setAttribute("type","unknown");
+                Scaffold_Elements.get(i).SC.addContent(Scaffold_Elements.get(i).ret_urn);
+
+
                 i++;
             }
         }
-
-
             System.out.println("i is : " + i);
+            System.out.println("error name is : " + ExcelReaderResult.getKey());
 
             XMLOutputter xout = new XMLOutputter();
             Format fo = xout.getFormat();
@@ -235,7 +239,6 @@ public class Xml_main {
         }
 
 	public static void main(String[] args) {
-		HM = ExcelReader.ReadExcel("C:/Exception/invalid_iterator_list.xlsx");// enter file name as argument;
 
 		while(true) {
 			ArrayList <Scaffold> Global_Scaffold_List = new ArrayList<Scaffold>();

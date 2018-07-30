@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import java.lang.reflect.Array;
 import java.util.*;
 
 import javafx.util.Pair;
@@ -15,7 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelReader {
-    public static HashMap<String, List<Pair<String, ArrayList<String>>>> ReadExcel(String filePath) {
+    public static Pair<String, HashMap <String, List<Pair<String, ArrayList<String>>>>> ReadExcel(String filePath) {
         hash_map ExcelHM = new hash_map();
         try {
             File file = new File(filePath);
@@ -31,7 +33,10 @@ public class ExcelReader {
 
             System.out.println("testcell formula is : " + sheet.getRow(26).getCell(0).getCellTypeEnum());
             System.out.println("num of rows : " + rows);
-            for(rowIndex=2;rowIndex<rows;rowIndex++){
+
+            String errorName = sheet.getRow(0).getCell(1).getStringCellValue();
+            System.out.println("Error name is : " + errorName);
+            for(rowIndex=2;rowIndex<rows;rowIndex++){ //container, function format, arg_num 열들을 읽고 hashmap에 추가
 
                 XSSFRow row = sheet.getRow(rowIndex);
                 if(row != null){
@@ -47,47 +52,13 @@ public class ExcelReader {
                         argNumList = new ArrayList<String>(Arrays.asList(row.getCell(3).getStringCellValue().split(",")));
                     }
                     ExcelHM.Construct(row.getCell(0).getStringCellValue(),row.getCell(2).getStringCellValue(),argNumList);
-
-/*                    for(columnIndex = 0; columnIndex < cells; columnIndex++){
-                        String value = "";
-                        XSSFCell cell = row.getCell(columnIndex);
-                        if(cell==null){
-                            continue;
-                        } else {
-                            switch (columnIndex){
-                                case 0:
-
-                            }
-                            switch (cell.getCellTypeEnum()) {
-                                case FORMULA:
-                                    value = cell.getCellFormula();
-                                    break;
-                                case NUMERIC:
-                                    value = cell.getNumericCellValue() + "";
-                                    break;
-                                case STRING:
-                                    value = cell.getStringCellValue() + "";
-                                    break;
-                                case BLANK:
-                                    value = cell.getBooleanCellValue() + "";
-                                    break;
-                                case ERROR:
-                                    value = cell.getErrorCellValue() + "";
-                                    break;
-                            }
-
-
-                            System.out.println("row : " + rowIndex + " column : " + columnIndex + " content : " + value);
-                            //한줄씩 받을때마다 hashmap에 추가
-
-                        }*/
-
-
-
-
-                }
+                    }
             }
-            return ExcelHM.get_hashmap();
+            //Pair<String, HashMap <String, List<Pair<String, ArrayList<String>>>>> result = new Pair<>(errorName,ExcelHM.get_hashmap());
+
+            /*result.add(errorName);
+            result.add(ExcelHM.get_hashmap());*/
+            return new Pair<>(errorName,ExcelHM.get_hashmap()); // return Arraylist of  error name and hashmap
 
         } catch (FileNotFoundException fe) {
             System.out.println("FileNotFoundException >> " + fe.toString());

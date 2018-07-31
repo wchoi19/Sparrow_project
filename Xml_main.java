@@ -10,11 +10,8 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
+import java.util.*;
 //import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,77 +57,80 @@ public class Xml_main {
 
             if(memFuncMatcher.find()) container_type=memFuncMatcher.group(2);
         } else isMember=false;
-        String[] splitted=input_func.split("(\ntemplate.+\\> )|(\n)|(template.+\\>)"); //template
+        String[] splitted=input_func.split("(\ntemplate.+?\\> )|(\n)|(template.+?\\>)"); //template
+        splitted = Arrays.stream(splitted).filter(x -> x.length()>1).toArray(String[]::new); //공백인 줄 필터
+
 
         for(int i=0; i<splitted.length; i++){
-            Scaffold_List.add(new Scaffold()); // 占쌕몌옙占쏙옙 Scaffold 占쏙옙체 占쏙옙占쏙옙
-            Scaffold_List.get(i).set_isMemberFn(isMember);
-            if(isMember) Scaffold_List.get(i).add_arguments(container_type);
-            System.out.println("\nsplitted[" + i +"] is : " + splitted[i] + "\n--------------------------------------------------------------");
+            //if(splitted[i].length()>1) {
+                Scaffold_List.add(new Scaffold()); // 占쌕몌옙占쏙옙 Scaffold 占쏙옙체 占쏙옙占쏙옙
+                Scaffold_List.get(i).set_isMemberFn(isMember);
+                if (isMember) Scaffold_List.get(i).add_arguments(container_type);
+                System.out.println("\nsplitted[" + i + "] is : " + splitted[i] + "\n--------------------------------------------------------------");
 
-            Scaffold_List.get(i).set_full_row(splitted[i]);
+                Scaffold_List.get(i).set_full_row(splitted[i]);
 
-            String noArgsRegex="([^(]+\\s)?(\\S+)(\\s)(\\S+)\\(\\)(.*?);";
-            String spZeroRegex="(^|[^A-Za-z]+)(T)($|[^A-Za-z]+)";
+                String noArgsRegex = "([^(]+\\s)?(\\S+)(\\s)(\\S+)\\(\\)(.*?);";
+                String spZeroRegex = "(^|[^A-Za-z]+)(T)($|[^A-Za-z]+)";
 
-            if(!splitted[i].matches(noArgsRegex)) { //if function has 1<= arguments
-                Pattern rowPattern = Pattern.compile("(\\S+\\s)?(\\S+)(\\s)(\\S+?)(\\(\\s)(.*?\\s\\))(.+)?");
-                Matcher rowMatcher = rowPattern.matcher(splitted[i]);
-                String parameters = "";
+                if (!splitted[i].matches(noArgsRegex)) { //if function has 1<= arguments
+                    Pattern rowPattern = Pattern.compile("(\\S+\\s)?(\\S+)(\\s)(\\S+?)(\\(\\s)(.*?\\s\\))(.+)?");
+                    Matcher rowMatcher = rowPattern.matcher(splitted[i]);
+                    String parameters = "";
 
-                if (rowMatcher.find()) {
-                    Scaffold_List.get(i).set_return_type(rowMatcher.group(2));
-                    Scaffold_List.get(i).set_fn_name(rowMatcher.group(4));
-                    parameters = rowMatcher.group(6);
+                    if (rowMatcher.find()) {
+                        Scaffold_List.get(i).set_return_type(rowMatcher.group(2));
+                        Scaffold_List.get(i).set_fn_name(rowMatcher.group(4));
+                        parameters = rowMatcher.group(6);
 
-                    System.out.println("return_type : " + Scaffold_List.get(i).get_return_type());
-                    System.out.println("function_name : " + Scaffold_List.get(i).get_fn_name());
-                    System.out.println("parameters : " + parameters);
-                }
-
-                String paramRegex = "(\\S+\\s)??(\\S+)(\\s)(\\S+)(\\s??)(=.+)??(,\\s|\\s\\))";
-                Pattern paramPattern = Pattern.compile(paramRegex);
-                Matcher paramMatcher = paramPattern.matcher(parameters);
-
-                Pattern spZeroPattern=Pattern.compile(spZeroRegex);
-
-                while (paramMatcher.find()) {
-                    String foundParam = paramMatcher.group(2);
-                    Matcher spZeroMatcher=spZeroPattern.matcher(foundParam);
-                    if (spZeroMatcher.find()) {
-                        System.out.println("_SPARROW_ZERO_ case found. match is : " + spZeroMatcher.group());
-                        foundParam=foundParam.replaceAll(spZeroRegex,"$1_SPARROW_ZERO_$3");
+                        System.out.println("return_type : " + Scaffold_List.get(i).get_return_type());
+                        System.out.println("function_name : " + Scaffold_List.get(i).get_fn_name());
+                        System.out.println("parameters : " + parameters);
                     }
 
-                    Scaffold_List.get(i).add_arguments(foundParam);
-                    System.out.println("-------Argument Type is : " + foundParam);
-                    arg_temp+=foundParam;
+                    String paramRegex = "(\\S+\\s)??(\\S+)(\\s)(\\S+)(\\s??)(=.+)??(,\\s|\\s\\))";
+                    Pattern paramPattern = Pattern.compile(paramRegex);
+                    Matcher paramMatcher = paramPattern.matcher(parameters);
+
+                    Pattern spZeroPattern = Pattern.compile(spZeroRegex);
+
+                    while (paramMatcher.find()) {
+                        String foundParam = paramMatcher.group(2);
+                        Matcher spZeroMatcher = spZeroPattern.matcher(foundParam);
+                        if (spZeroMatcher.find()) {
+                            System.out.println("_SPARROW_ZERO_ case found. match is : " + spZeroMatcher.group());
+                            foundParam = foundParam.replaceAll(spZeroRegex, "$1_SPARROW_ZERO_$3");
+                        }
+
+                        Scaffold_List.get(i).add_arguments(foundParam);
+                        System.out.println("-------Argument Type is : " + foundParam);
+                        arg_temp += foundParam;
+                    }
+                } else {
+                    Pattern noArgsPattern = Pattern.compile(noArgsRegex);
+                    Matcher noArgsMatcher = noArgsPattern.matcher(splitted[i]);
+
+
+                    if (noArgsMatcher.find()) {
+                        System.out.println("no-arg function found!");
+                        Scaffold_List.get(i).set_return_type(noArgsMatcher.group(2));
+                        Scaffold_List.get(i).set_fn_name(noArgsMatcher.group(4));
+
+                        System.out.println("return_type : " + Scaffold_List.get(i).get_return_type());
+                        System.out.println("function_name : " + Scaffold_List.get(i).get_fn_name());
+                        System.out.println("parameters : (none)");
+                    }
+
                 }
-            } else {
-                Pattern noArgsPattern = Pattern.compile(noArgsRegex);
-                Matcher noArgsMatcher = noArgsPattern.matcher(splitted[i]);
-
-
-                if (noArgsMatcher.find()) {
-                    System.out.println("no-arg function found!");
-                    Scaffold_List.get(i).set_return_type(noArgsMatcher.group(2));
-                    Scaffold_List.get(i).set_fn_name(noArgsMatcher.group(4));
-
-                    System.out.println("return_type : " + Scaffold_List.get(i).get_return_type());
-                    System.out.println("function_name : " + Scaffold_List.get(i).get_fn_name());
-                    System.out.println("parameters : (none)" );
+                //여기에서 확인해주고 return type을 "duplicate"이런거로 설정해준다음
+                //write 에서 return type이 duplicate이면 스킵해라 이렇게 만들면 될듯.
+                String check = Scaffold_List.get(i).get_return_type() + Scaffold_List.get(i).get_fn_name() + arg_temp;
+                if (!temp_check.contains(check)) {
+                    temp_check.add(check);
+                } else {
+                    Scaffold_List.get(i).set_return_type("duplicate");
                 }
-
-            }
-            //여기에서 확인해주고 return type을 "duplicate"이런거로 설정해준다음
-            //write 에서 return type이 duplicate이면 스킵해라 이렇게 만들면 될듯.
-            String check = Scaffold_List.get(i).get_return_type()+Scaffold_List.get(i).get_fn_name()+arg_temp;
-            if( !temp_check.contains(check) ){
-                temp_check.add(check);
-            }
-            else{
-                Scaffold_List.get(i).set_return_type("duplicate");
-            }
+            //}
         }
         return Scaffold_List;
     }

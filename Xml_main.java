@@ -60,6 +60,7 @@ public class Xml_main {
         String[] splitted=input_func.split("(\ntemplate.+?\\> )|(\n)|(template.+?\\>)"); //template
         splitted = Arrays.stream(splitted).filter(x -> x.length()>1).toArray(String[]::new); //공백인 줄 필터
 
+        //TODO : line을 받고 row regex에 맞는지 보면 굳이 template으로 split할 필요 없음 ?
 
         for(int i=0; i<splitted.length; i++){
             //if(splitted[i].length()>1) {
@@ -70,23 +71,34 @@ public class Xml_main {
 
                 Scaffold_List.get(i).set_full_row(splitted[i]);
 
-                String noArgsRegex = "([^(]+\\s)?(\\S+)(\\s)(\\S+)\\(\\)(.*?);";
                 String spZeroRegex = "(^|[^A-Za-z]+)(T)($|[^A-Za-z]+)";
+                String ultimateRowRegex="(\\S+\\s)?(\\S+)(\\s)(\\S+?)(\\()(.*?)(\\)[^\\)]*;)$";
 
-                if (!splitted[i].matches(noArgsRegex)) { //if function has 1<= arguments
-                    Pattern rowPattern = Pattern.compile("(\\S+\\s)?(\\S+)(\\s)(\\S+?)(\\(\\s)(.*?\\s\\))(.+)?");
-                    Matcher rowMatcher = rowPattern.matcher(splitted[i]);
-                    String parameters = "";
+                Pattern ultimateRowPattern = Pattern.compile(ultimateRowRegex);
+                Matcher ultimateRowMatcher = ultimateRowPattern.matcher(splitted[i]);
+                String parameters = "";
 
-                    if (rowMatcher.find()) {
-                        Scaffold_List.get(i).set_return_type(rowMatcher.group(2));
-                        Scaffold_List.get(i).set_fn_name(rowMatcher.group(4));
-                        parameters = rowMatcher.group(6);
+                if (ultimateRowMatcher.find()) {
+                    Scaffold_List.get(i).set_return_type(ultimateRowMatcher.group(2));
+                    Scaffold_List.get(i).set_fn_name(ultimateRowMatcher.group(4));
+                    parameters = ultimateRowMatcher.group(6); //if parameters is empty, it's a function w/ no parameters
 
-                        System.out.println("return_type : " + Scaffold_List.get(i).get_return_type());
-                        System.out.println("function_name : " + Scaffold_List.get(i).get_fn_name());
-                        System.out.println("parameters : " + parameters);
-                    }
+                    //cut the blank spaces at head and tail, if any
+                    if(parameters.startsWith(" ")) parameters=parameters.substring(1);
+                    if(parameters.endsWith(" ")) parameters=parameters.substring(0,parameters.length()-1);
+
+
+
+                    System.out.println("return_type : " + Scaffold_List.get(i).get_return_type());
+                    System.out.println("function_name : " + Scaffold_List.get(i).get_fn_name());
+                    System.out.println("parameters : " + parameters);
+                }
+
+                if(parameters.length()<1){
+                    System.out.println("function has no parameters.");
+                } else {
+                    //fit paramRegex
+                    parameters += " )";
 
                     String paramRegex = "(\\S+\\s)??(\\S+)(\\s)(\\S+)(\\s??)(=.+)??(,\\s|\\s\\))";
                     Pattern paramPattern = Pattern.compile(paramRegex);
@@ -106,22 +118,8 @@ public class Xml_main {
                         System.out.println("-------Argument Type is : " + foundParam);
                         arg_temp += foundParam;
                     }
-                } else {
-                    Pattern noArgsPattern = Pattern.compile(noArgsRegex);
-                    Matcher noArgsMatcher = noArgsPattern.matcher(splitted[i]);
-
-
-                    if (noArgsMatcher.find()) {
-                        System.out.println("no-arg function found!");
-                        Scaffold_List.get(i).set_return_type(noArgsMatcher.group(2));
-                        Scaffold_List.get(i).set_fn_name(noArgsMatcher.group(4));
-
-                        System.out.println("return_type : " + Scaffold_List.get(i).get_return_type());
-                        System.out.println("function_name : " + Scaffold_List.get(i).get_fn_name());
-                        System.out.println("parameters : (none)");
-                    }
-
                 }
+
                 //여기에서 확인해주고 return type을 "duplicate"이런거로 설정해준다음
                 //write 에서 return type이 duplicate이면 스킵해라 이렇게 만들면 될듯.
                 String check = Scaffold_List.get(i).get_return_type() + Scaffold_List.get(i).get_fn_name() + arg_temp;
@@ -182,33 +180,33 @@ public class Xml_main {
                 Scaffold_Elements.get(i).func.addContent(Scaffold_Elements.get(i).func_args);
 
                 System.out.println("container_type is : " + container_type);
-                List<Pair<String, ArrayList<String>>> FuncRowList = HM.get(container_type); //get function formats from sheet that match container type
-                /*for(Pair funcpair : FuncRowList){
-                    System.out.println("key of pair is : " + funcpair.getKey());
-                    System.out.println("full_row_temp : " + full_row_temp);
-                }*/
-                System.out.println("FuncRowList.size() is : " + FuncRowList.size());
-                ArrayList<String> tempArgNumList = null; //temp container to store arg_nums from sheet
 
-                for (int count = 0; count < FuncRowList.size(); count++) {
-                    if (FuncRowList.get(count).getKey().equals(full_row_temp)) { //if function format matches scraped row
-                        tempArgNumList = FuncRowList.get(count).getValue(); // store arg_num list
-                        System.out.println("invaliditer found");
-                        //System.out.println(tempArgNumList + " ---- " + FuncRowList.get(count).getKey());
-                        break;
-                    }
-                }
+                if(HM.containsKey(container_type)) {
+                    List<Pair<String, ArrayList<String>>> FuncRowList = HM.get(container_type); //get function formats from sheet that match container type
 
-                if (tempArgNumList != null) {
-                    Scaffold_Elements.get(i).func.setAttribute("type", errorName);
-                    for (int count = 0; count < tempArgNumList.size(); count++) { //
-                        Scaffold_Elements.get(i).Func_arg_list.add(new Element("arg"));
-                    }
-                    for (int count = 0; count < tempArgNumList.size(); count++) {
-                        Scaffold_Elements.get(i).Func_arg_list.get(count).setAttribute("num", tempArgNumList.get(count));
-                        Scaffold_Elements.get(i).func_args.addContent(Scaffold_Elements.get(i).Func_arg_list.get(count));
+                    System.out.println("FuncRowList.size() is : " + FuncRowList.size());
+                    ArrayList<String> tempArgNumList = null; //temp container to store arg_nums from sheet
+
+                    for (int count = 0; count < FuncRowList.size(); count++) {
+                        if (FuncRowList.get(count).getKey().equals(full_row_temp)) { //if function format matches scraped row
+                            tempArgNumList = FuncRowList.get(count).getValue(); // store arg_num list
+                            System.out.println("invaliditer found");
+                            //System.out.println(tempArgNumList + " ---- " + FuncRowList.get(count).getKey());
+                            break;
+                        }
                     }
 
+                    if (tempArgNumList != null) {
+                        Scaffold_Elements.get(i).func.setAttribute("type", errorName);
+                        for (int count = 0; count < tempArgNumList.size(); count++) { //
+                            Scaffold_Elements.get(i).Func_arg_list.add(new Element("arg"));
+                        }
+                        for (int count = 0; count < tempArgNumList.size(); count++) {
+                            Scaffold_Elements.get(i).Func_arg_list.get(count).setAttribute("num", tempArgNumList.get(count));
+                            Scaffold_Elements.get(i).func_args.addContent(Scaffold_Elements.get(i).Func_arg_list.get(count));
+                        }
+
+                    }
                 }
 
                 //----------<return>

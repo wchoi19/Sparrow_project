@@ -25,10 +25,18 @@ public class MemFuncUrlScraper {
             Queue<String> urlResults=new LinkedList<String>();
             String currHeader = "default";
 
+            //크롤링 할 카테고리들.
+            List<String> HeaderstoScrape = new ArrayList<>();
+            HeaderstoScrape.add("Iterators");
+            HeaderstoScrape.add("Capacity");
+            HeaderstoScrape.add("Modifiers");
+            HeaderstoScrape.add("Lookup");
+            HeaderstoScrape.add("Bucket Interface");
+
             //PARSE HREF LINKS OF NTH ELEMENT
             for (Element row : document.select("div.t-navbar-head:nth-child(3n) table.t-nv-begin tr")){
-                if(row.hasClass("t-nv-h2")) currHeader=row.select("td").text(); // if it is a header row, set the current header to the text of the row
-                else if(!(currHeader.equals("Element access")||currHeader.equals("default")) && row.hasClass("t-nv")) {
+                if(row.hasClass("t-nv-h2")||row.hasClass("t-nv-h1")) currHeader=row.select("td").text(); // if it is a header row, set the current header to the text of the row
+                else if(HeaderstoScrape.contains(currHeader) && row.hasClass("t-nv")) {
                     String link = row.select("a").attr("href");
                     System.out.println("link is : https://en.cppreference.com" + link);
                     urlResults.add("https://en.cppreference.com" + link);

@@ -20,10 +20,12 @@ public class Xml_main {
     private String input_func;
     //private ArrayList <Scaffold> Scaffold_List = new ArrayList<Scaffold>();
     private String output_filename = "practice.xml";
-    private static String container_type;
+    private String container_type;
     private static Pair<String, HashMap <String, List<Pair<String, ArrayList<String>>>>> ExcelReaderResult = ExcelReader.ReadExcel("C:/Exception/invalid_iterator_list.xlsx");
     private static HashMap<String, List<Pair<String, ArrayList<String>>>> HM = ExcelReaderResult.getValue();
     private static String errorName=ExcelReaderResult.getKey();
+
+    public String getContainer_type(){ return this.container_type;}
 
     public boolean inputIsValid; //checks if input from Scraper is a valid cppreference.com url that can be parsed.
     public void setInput(String[] input){
@@ -35,9 +37,9 @@ public class Xml_main {
             inputIsValid=false;
         }
     };
-    public void setOutput_filename(String s){this.output_filename=s.replaceAll(":+","_") + ".xml";}
-    public String getOutput_filename() {return output_filename;};
-    public static ArrayList<Scaffold> init(String[] input){ //Parsing占쏙옙 HTML占쏙옙 Scaffold 占쏙옙체 占쏙옙占쏙옙 占쏙옙 占쏙옙占쏙옙 占쌉뤄옙
+    /*public void setOutput_filename(String s){this.output_filename=s.replaceAll(":+","_") + ".xml";}
+    public String getOutput_filename() {return output_filename;};*/
+    public Pair<String, ArrayList<Scaffold>> init(String[] input){ //Parsing占쏙옙 HTML占쏙옙 Scaffold 占쏙옙체 占쏙옙占쏙옙 占쏙옙 占쏙옙占쏙옙 占쌉뤄옙
 
         String input_funcname = input[0];
         String input_func = input[1];
@@ -130,12 +132,12 @@ public class Xml_main {
                 }
             //}
         }
-        return Scaffold_List;
+        return new Pair<> (container_type, Scaffold_List);
     }
     /**
      * list占쏙옙 占쏙옙占쏙옙獵占� 占쏙옙占쏙옙占쏙옙占쏙옙占쏙옙 xml占쏙옙占쏙옙占쏙옙 占쏙옙占쏙옙占� 占쌨소듸옙
      */
-    public static void write(ArrayList<Scaffold> slToWrite) { //Scaffold 占쏙옙체占썽에 占쏙옙占쏙옙占싹댐옙 xml element占쏙옙 占쏙옙占쏙옙占� 占쏙옙占쏙옙 Scaffold_Element 占쏙옙체 占쏙옙占쏙옙
+    public void write(ArrayList<Scaffold> slToWrite, String output_filename) { //Scaffold 占쏙옙체占썽에 占쏙옙占쏙옙占싹댐옙 xml element占쏙옙 占쏙옙占쏙옙占� 占쏙옙占쏙옙 Scaffold_Element 占쏙옙체 占쏙옙占쏙옙
 
         Document doc = new Document();
         ArrayList<Scaffold_Element> Scaffold_Elements = new ArrayList<Scaffold_Element>();
@@ -228,10 +230,12 @@ public class Xml_main {
             fo.setLineSeparator("\r\n");//占쌕바뀐옙
             fo.setTextMode(Format.TextMode.TRIM);
 
-
+            output_filename+=".xml";
+            System.out.println("output_filename will be : " + output_filename);
             try {
                 xout.setFormat(fo);
-                xout.output(doc, new FileWriter("practice.xml"));
+                xout.output(doc, new FileWriter(output_filename));
+                System.out.println("Write complete. Saved as " + output_filename);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -247,9 +251,11 @@ public class Xml_main {
 			}
 			System.out.println("urlQueue size is : " + urlQueue.size());
 
+			Xml_main InitInstance = new Xml_main();
 			while(!urlQueue.isEmpty()){
 
-				Global_Scaffold_List.addAll(Xml_main.init(Scraper.scrap(urlQueue.poll())));
+				Global_Scaffold_List.addAll(InitInstance.init(Scraper.scrap(urlQueue.poll())).getValue());
+
 			}
 			System.out.println("GSL size is : " + Global_Scaffold_List.size());
 
@@ -258,7 +264,7 @@ public class Xml_main {
 				System.out.println("GSL ret_type : " + gs.get_return_type());
 			}
 
-			Xml_main.write(Global_Scaffold_List);
+			InitInstance.write(Global_Scaffold_List,InitInstance.getContainer_type());
 
 		}
 	}

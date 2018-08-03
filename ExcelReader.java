@@ -52,7 +52,11 @@ public class ExcelReader {
                         argNumList = new ArrayList<String>(Arrays.asList(row.getCell(3).getStringCellValue().split(",")));
                     }
                     ExcelHM.Construct(row.getCell(0).getStringCellValue(),row.getCell(2).getStringCellValue(),argNumList);
+<<<<<<< HEAD
                 }
+=======
+                    }
+>>>>>>> 0dfb0fce1214b13d62d6013f90b7817f822aff35
             }
             //Pair<String, HashMap <String, List<Pair<String, ArrayList<String>>>>> result = new Pair<>(errorName,ExcelHM.get_hashmap());
 

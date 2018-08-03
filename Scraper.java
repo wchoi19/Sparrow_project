@@ -8,12 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+
+/*
+ * member function 항목 하나의 URL을 받아 해당 함수의 이름과 함수 포맷들을 리턴하는 클래스.
+ */
+
 public class Scraper {
     public static String[] scrap(String url){
-        //while(true) {
-
-        //TAKE INPUT URL FROM CPPREFERENCE
-
         System.out.println("URL INPUT : " + url);
 
         //PARSE FUNCTION NAME AND ARGUMENTS FROM HTML
